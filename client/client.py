@@ -24,7 +24,7 @@ def handleSendFile(filename, clientAddress):
           if not bytes_read:
               break
           s.sendto(bytes_read, clientAddress)
-      s.sendto("|||END|||".encode('utf-8'), clientAddress)
+      s.sendto("/EOF".encode('utf-8'), clientAddress)
 
 def handleFile(filename,file_extension):
   '''
@@ -36,7 +36,7 @@ def handleFile(filename,file_extension):
     while True:
       message, clientAddress = s.recvfrom(BUFF_SIZE)
       filteredMessage = message
-      if filteredMessage == '|||END|||'.encode('utf-8'):
+      if filteredMessage == '/EOF'.encode('utf-8'):
         break
       f.write(filteredMessage)
 
@@ -49,6 +49,7 @@ def handleFileName(message):
   return filename + '_CLIENT', file_extension
 
 handleSendFile(filename, (serverName, serverPort))
+#---------------
 
 message, clientAddress = s.recvfrom(BUFF_SIZE)
 filename, file_extension = handleFileName(message)

@@ -19,7 +19,7 @@ def handleFile(filename,file_extension):
     while True:
       message, clientAddress = serverSocket.recvfrom(BUFF_SIZE)
       filteredMessage = message
-      if filteredMessage == '|||END|||'.encode('utf-8'):
+      if filteredMessage == '/EOF'.encode('utf-8'):
         break
       f.write(filteredMessage)
     return clientAddress
@@ -46,10 +46,11 @@ def handleSendFile(filename, clientAddress):
           if not bytes_read:
               break
           serverSocket.sendto(bytes_read, clientAddress)
-      serverSocket.sendto("|||END|||".encode('utf-8'), clientAddress)
+      serverSocket.sendto("/EOF".encode('utf-8'), clientAddress)
 
 while True:
   message, clientAddress = serverSocket.recvfrom(BUFF_SIZE)
   filename, file_extension = handleFileName(message)
   clientAddress = handleFile(filename, file_extension)
   handleSendFile(filename+'.'+file_extension, clientAddress)
+
