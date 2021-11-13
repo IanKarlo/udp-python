@@ -1,52 +1,51 @@
 from socket import *
+import time
 
-serverPort = 8001
+serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 BUFF_SIZE = 1024
 
-serverSocket.bind(('localhost', serverPort))
-
-print ('The server is ready to receive')
+serverSocket.bind(('localhost', 0))
+print (f'The server is ready to receive in {serverSocket.getsockname()}')
 
 def handleFile(filename,file_extension):
   '''
-    This  function is responsible for reading the data stream
-    relative to the file that will be received, and save it in
-    its proper place, knowing its name and extension
+  Lê os dados relativo ao arquivo que será recebido, e o salva
+  Enquanto não chegar na mensagem de fim.
   '''
   with open(filename + '.' + file_extension, "wb") as f:
     clientAddress = None
     while True:
+      print("RECEBENDO")
       message, clientAddress = serverSocket.recvfrom(BUFF_SIZE)
       filteredMessage = message
-      if filteredMessage == '/EOF'.encode('utf-8'):
-        break
+      if filteredMessage == '/EOF'.encode('utf-8'): break
       f.write(filteredMessage)
+    print("ACABOU DE RECEBER")
     return clientAddress
-
 
 def handleFileName(message):
   '''
-  This function takes the full name of the file and splits it
-  into its real name and its extension.
+  Divide o nome do arquvio e a extensão.
   '''
   filename, file_extension = message.decode().split('.')
   return filename + '_SERVER', file_extension
 
-
 def handleSendFile(filename, clientAddress):
   '''
-  This function is responsible for reading a saved file and
-  sending it to a destination through the socket.
+  Lê o arquivo salvo e envia através do socket.
   '''
+
   serverSocket.sendto(f"{filename}".encode('utf-8'),clientAddress)
   with open(filename, "rb") as f:
       while True:
+          time.sleep(0.00001)
           bytes_read = f.read(BUFF_SIZE)
-          if not bytes_read:
-              break
+          if not bytes_read: break
           serverSocket.sendto(bytes_read, clientAddress)
-      serverSocket.sendto("/EOF".encode('utf-8'), clientAddress)
+          print("ENVIANDO")
+      serverSocket.sendto(("/EOF").encode("utf-8"), clientAddress)
+      print("ACABOU DE ENVIAR")
 
 while True:
   message, clientAddress = serverSocket.recvfrom(BUFF_SIZE)
