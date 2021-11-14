@@ -46,7 +46,6 @@ def handleFile(filename,file_extension):
       filteredMessage = message
       if '/EOF'.encode('utf-8') in filteredMessage: break
       f.write(filteredMessage)
-      print(filteredMessage)
     print("ACABOU DE RECEBER")
 
 def handleFileName(message):
