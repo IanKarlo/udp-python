@@ -47,7 +47,6 @@ def handleSendFile(filename, clientAddress):
           bytes_read = f.read(BUFF_SIZE)
           if not bytes_read: break
           serverSocket.sendto(bytes_read, clientAddress)
-          print("ENVIANDO")
       serverSocket.sendto(("/EOF").encode("utf-8"), clientAddress)
       print("ACABOU DE ENVIAR")
 
