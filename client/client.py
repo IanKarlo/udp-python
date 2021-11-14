@@ -7,19 +7,15 @@ BUFF_SIZE = 1024
 DELAY = 1e-3 # No Linux alguns arquivos podem não chegar
 
 serverName = 'localhost'
-serverPort = 57147
+serverPort = 8001
 s = socket(AF_INET, SOCK_DGRAM)
 
-<<<<<<< HEAD
-if sys.argv[1]: filename = sys.argv[1]
-else: filename = input("Coloque o nome do arquivo para enviar: ")
+filename = None
 
-=======
-filename = sys.argv[1]
->>>>>>> 4a6f26552e09bfc2f849994250e657c905715f46
-filesize = os.path.getsize(filename)
-print(filesize, filesize/1024)
-input()
+try:
+  if sys.argv[1]: filename = sys.argv[1]
+except:
+  filename = input("Coloque o nome do arquivo para enviar: ")
 
 def handleSendFile(filename, clientAddress):
   '''
@@ -33,7 +29,6 @@ def handleSendFile(filename, clientAddress):
           bytes_read = f.read(BUFF_SIZE)
           if not bytes_read: break
           s.sendto(bytes_read, clientAddress)
-          print("ENVIANDO")
       s.sendto(("/EOF").encode("utf-8"), clientAddress)
       print("Acabou de enviar")
 
@@ -46,11 +41,7 @@ def handleFile(filename,file_extension):
   if os.path.isfile(nome): os.remove(nome)
   with open(nome, "wb") as f:
     while True:
-<<<<<<< HEAD
       time.sleep(DELAY)
-=======
-      print("RECEBENDO")
->>>>>>> 4a6f26552e09bfc2f849994250e657c905715f46
       message, clientAddress = s.recvfrom(BUFF_SIZE)
       filteredMessage = message
       if '/EOF'.encode('utf-8') in filteredMessage: break
