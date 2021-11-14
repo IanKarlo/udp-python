@@ -1,8 +1,8 @@
 ## UPD Socket Python
 Grupo:
 - Alef Gabryel Lourenço da Costa (aglc@cin.ufpe.br)
-- Ian Karlo Torres dos Santos (aglc@cin.ufpe.br)
-- Alef Gabryel Lourenço da Costa (aglc@cin.ufpe.br)
+- Ian Karlo Torres dos Santos (ikts@cin.ufpe.br)
+- Samuel Simões de Souza Filho (sssf2@cin.ufpe.br)
 
 ### Como usar:
 Para rodar o sistema é necessario primeiramente rodar o arquivo do servidor (server.py) e depois o arquivo do cliente(client.py). Para o arquivo do cliente você pode passar o arquivo tanto pelo terminal com:
