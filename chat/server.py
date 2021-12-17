@@ -11,15 +11,13 @@ server = RDT3(isServer=True, host = 'localhost', port= 8001)
 BUFF_SIZE = 1024
 
 def broadcast(message, name, socket, new):
-
   msg = None
   address = None
-
   if new:
     msg = f'{name} entrou na sala'
   else:
-    now=datetime.now()
-    msg = f'{now.hour}:{now.minute}:{now.second} {name}: {message}'
+    now = datetime.now()
+    msg = f'{now.hour :02}:{now.minute:02}:{now.second:02} {name}: {message}'
 
   print(msg)
 

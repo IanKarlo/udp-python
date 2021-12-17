@@ -12,9 +12,9 @@ s = socket(AF_INET, SOCK_DGRAM)
 
 filename = None
 
-try:
+try: 
   if sys.argv[1]: filename = sys.argv[1]
-except:
+except: 
   filename = input("Coloque o nome do arquivo para enviar: ")
 
 def handleSendFile(filename, clientAddress):

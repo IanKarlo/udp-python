@@ -23,17 +23,16 @@ serverAddress = (serverName, serverPort)
 username = None
 
 threadlock = threading.Lock()
-
 loop = True
-
 
 def clearLine():
   sys.stdout.write("\033[F")
   sys.stdout.write("\033[K")
 
 def handleStart(threadlock):
+  # Grab username
   while True:
-    text = input()
+    text = input("Olá, qual o seu nome? ")
     if text[0:16] == 'hi, meu nome eh ':
       global username
       username = text[16:]
