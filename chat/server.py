@@ -31,11 +31,12 @@ def listClients(socket, address):
     socket.sendDataServer(dict_ids,name.encode('utf-8'), address)
 
 while True:
-  msg, address, new_client = server.receiveDataServer(dict_ids, dict_info)
+  msg, address, new_client, name = server.receiveDataServer(dict_ids, dict_info)
   key = address[0] + ':' + str(address[1])
   if msg.decode() == 'list':
+    broadcast(msg.decode(), name, server, False)
     listClients(server, address)
   elif new_client:
-    broadcast('', dict_info[key], server, True)
+    broadcast('', name, server, True)
   else:
-    broadcast(msg.decode(), dict_info[key], server, False)
+    broadcast(msg.decode(), name, server, False)

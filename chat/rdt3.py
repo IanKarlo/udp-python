@@ -35,6 +35,18 @@ class RDT3():
     except:
       return False
 
+  def isACKServer(self, message, id):
+    try:
+      ACK = message[513:]
+      ack_id = message[0]
+
+      if ack_id == id and ACK.decode() == "ACK":
+        return True
+      else:
+        return False
+    except:
+      return False
+
   def seqValue(self, data):
     value = data[0]
     return value
@@ -59,13 +71,16 @@ class RDT3():
     packet = (self.id).to_bytes(1, 'big') + checksum +'ACK'.encode()
     self.socket.sendto(packet, address)
 
+  def sendACKServer(self, id, checksum, address):
+    packet = (id).to_bytes(1, 'big') + checksum +'ACK'.encode()
+    self.socket.sendto(packet, address)
+
   def receiveData(self):
     self.socket.settimeout(0.001)
     response = None
     address = None
     while True:
       response, address = self.socket.recvfrom(BUFF_SIZE)
-
       if not self.isCorrupt(response) and self.seqValue(response) == self.id:
         break
       else:
@@ -92,12 +107,15 @@ class RDT3():
     while True:
       try:
         response, address = self.socket.recvfrom(BUFF_SIZE)
-        if not self.isCorrupt(response) and self.isACK(response):
+        if not self.isCorrupt(response) and self.isACKServer(response, dict_ids[key]):
           break
       except:
         self.socket.sendto(message, receiverAddress)
 
-    dict_ids[key] = 1 if dict_ids[key] == 0 else 0
+    if dict_ids[key] == 0:
+      dict_ids[key] = 1
+    else:
+      dict_ids[key] = 0
 
   def receiveDataServer(self, dict_ids, dict_info):
     self.socket.settimeout(None)
@@ -108,17 +126,11 @@ class RDT3():
     key = None
 
     while True:
+      id = 0
       response, address = self.socket.recvfrom(BUFF_SIZE)
       key = address[0] + ':' + str(address[1])
 
-      if key not in dict_info.keys():
-        dict_info[key] = response[513 + 16:].decode()
-        dict_ids[key] = 0
-        new_client = True
-      elif response == 'bye':
-        del dict_info[key]
-        del dict_ids[key]
-      else:
+      if key in dict_ids:
         id = dict_ids[key]
 
       if not self.isCorrupt(response) and self.seqValue(response) == id:
@@ -126,16 +138,30 @@ class RDT3():
       else:
         checksum = self.getChecksum('ACK'.encode('utf-8'))
         ACK_value = 1 if id == 0 else 0
-        self.sendACK(ACK_value, checksum, address)
+        self.sendACKServer(id, checksum, address)
 
     data = response[513:]
 
     checksum = self.getChecksum('ACK'.encode('utf-8'))
-    self.sendACK(id, checksum, address)
+    self.sendACKServer(id, checksum, address)
 
-    dict_ids[key] = 1 if id == 0 else 0
+    if key not in dict_info.keys():
+      dict_info[key] = response[513 + 16:].decode()
+      dict_ids[key] = 0
+      new_client = True
 
-    return data, address, new_client
+    name = dict_info[key]
+
+    if id == 0:
+      dict_ids[key] = 1
+    else:
+      dict_ids[key] = 0
+
+    if data.decode() == 'bye':
+      del dict_info[key]
+      del dict_ids[key]
+
+    return data, address, new_client, name
 
 
 
